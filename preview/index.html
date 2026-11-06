@@ -1,0 +1,3784 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IAKN Commerce - Live Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Icons+Outlined&family=Material+Icons&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --primary-blue: #0000FF;
+      --dark-blue: #00008B;
+      --accent-blue: #1e40af;
+      --bg-gray: #f8fafc;
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --card-bg: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0f172a 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #fff;
+    }
+
+    .top-banner {
+      margin-bottom: 16px;
+      text-align: center;
+      max-width: 480px;
+    }
+
+    .top-banner h1 {
+      font-size: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .top-banner p {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(59, 130, 246, 0.2);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      color: #93c5fd;
+      margin-top: 8px;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #3b82f6;
+      box-shadow: 0 0 8px #3b82f6;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(1.2);
+      }
+    }
+
+    /* Device Mockup */
+    .device-frame {
+      width: 390px;
+      height: 844px;
+      background: #000;
+      border-radius: 50px;
+      padding: 12px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 0 0 2px #334155;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .device-notch {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 28px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+    }
+
+    .notch-camera {
+      width: 10px;
+      height: 10px;
+      background: #1e293b;
+      border-radius: 50%;
+    }
+
+    .notch-speaker {
+      width: 45px;
+      height: 4px;
+      background: #1e293b;
+      border-radius: 4px;
+    }
+
+    .screen-content {
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      border-radius: 40px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      color: #0f172a;
+    }
+
+    /* Screen Container */
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: #fff;
+      transition: opacity 0.3s ease;
+    }
+
+    .screen.active {
+      display: flex;
+      z-index: 10;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 44px;
+      padding: 12px 24px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 600;
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .status-bar.dark-text {
+      color: #000;
+    }
+
+    .status-bar.light-text {
+      color: #fff;
+    }
+
+    .status-icons {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .status-icons .material-icons {
+      font-size: 16px;
+    }
+
+    /* 1. SPLASH SCREEN */
+    #screen-splash {
+      background: #ffffff;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      z-index: 100;
+    }
+
+    .splash-circle {
+      width: 24px;
+      height: 24px;
+      background: var(--primary-blue);
+      border-radius: 50%;
+      transform: scale(0);
+      transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .splash-circle.animate {
+      transform: scale(50);
+    }
+
+    .splash-logo-content {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      color: white;
+      opacity: 0;
+      transition: opacity 0.4s ease 0.4s;
+    }
+
+    .splash-logo-content.show {
+      opacity: 1;
+    }
+
+    /* 2. LOGIN & REGISTER HEADER */
+    .auth-header {
+      background: var(--primary-blue);
+      flex: 4;
+      padding: 44px 24px 16px;
+      display: flex;
+      flex-direction: column;
+      color: white;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      background: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-blue);
+    }
+
+    .brand-text h2 {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .brand-text p {
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0.95;
+    }
+
+    .auth-illustration {
+      flex: 1;
+      margin: 16px 0;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-card {
+      background: #fff;
+      border-top-left-radius: 40px;
+      border-top-right-radius: 40px;
+      padding: 24px;
+      flex: 6;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .auth-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .input-field {
+      width: 100%;
+      height: 48px;
+      border: 1px solid #bfdbfe;
+      border-radius: 20px;
+      padding: 0 45px;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 2px rgba(0, 0, 255, 0.15);
+    }
+
+    .input-icon-left {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 20px;
+    }
+
+    .input-icon-right {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .auth-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      margin: 8px 4px 18px;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #475569;
+      cursor: pointer;
+    }
+
+    .forgot-link {
+      color: var(--primary-blue);
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      width: 100%;
+      height: 48px;
+      background: var(--dark-blue);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 139, 0.25);
+      transition: transform 0.1s, background 0.2s;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+      background: #000066;
+    }
+
+    .social-divider {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+      margin: 16px 0 12px;
+    }
+
+    .social-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .social-btn {
+      flex: 1;
+      height: 42px;
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .social-btn:hover {
+      background: #f8fafc;
+    }
+
+    .auth-footer {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .auth-footer a {
+      color: var(--primary-blue);
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .copy-text {
+      text-align: center;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 14px;
+    }
+
+    /* 3. HOME & PRODUK APPBAR */
+    .appbar {
+      background: var(--dark-blue);
+      padding: 44px 16px 14px;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .appbar-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--dark-blue);
+    }
+
+    .user-info {
+      flex: 1;
+    }
+
+    .user-info h3 {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .user-info p {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .cart-badge-container {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -4px;
+      right: -6px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 700;
+      width: 17px;
+      height: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .search-box {
+      background: #fff;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      gap: 8px;
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      flex: 1;
+      font-size: 13px;
+      color: #1e293b;
+    }
+
+    .search-box .material-icons {
+      color: #94a3b8;
+      font-size: 20px;
+    }
+
+    /* Content Area */
+    .scroll-body {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 70px;
+      background: #f8fafc;
+    }
+
+    /* Info Banner */
+    .info-banner {
+      margin: 14px 16px 12px;
+      padding: 10px 14px;
+      background: rgba(0, 0, 255, 0.08);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-banner .material-icons {
+      color: var(--primary-blue);
+      font-size: 24px;
+    }
+
+    .info-banner-text {
+      flex: 1;
+    }
+
+    .info-banner-text h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary-blue);
+    }
+
+    .info-banner-text p {
+      font-size: 12px;
+      color: #334155;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 220px;
+    }
+
+    .btn-cek {
+      background: var(--dark-blue);
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Section Header */
+    .section-header {
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-header h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .section-header span {
+      font-size: 12px;
+      color: var(--primary-blue);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Categories Horizontal */
+    .categories-row {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding: 8px 16px 14px;
+      scrollbar-width: none;
+    }
+
+    .categories-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .category-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .category-icon {
+      width: 50px;
+      height: 50px;
+      background: rgba(0, 0, 255, 0.08);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-blue);
+      transition: transform 0.2s;
+    }
+
+    .category-item:hover .category-icon {
+      transform: scale(1.08);
+    }
+
+    .category-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    /* Promo Card */
+    .promo-card {
+      margin: 6px 16px 14px;
+      background: var(--primary-blue);
+      border-radius: 14px;
+      padding: 16px;
+      color: white;
+    }
+
+    .promo-tag-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tag-pill {
+      background: #4ade80;
+      color: #064e3b;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .promo-discount {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .promo-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 8px 0 4px;
+      line-height: 1.3;
+    }
+
+    .promo-card p {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.3;
+    }
+
+    .btn-voucher {
+      margin-top: 12px;
+      background: #fff;
+      color: var(--dark-blue);
+      border: none;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    /* Flash Sale */
+    .flash-sale-header {
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .flash-sale-header h3 {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .timer-container {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #ef4444;
+    }
+
+    .timer-box {
+      background: rgba(239, 68, 68, 0.12);
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    .flash-sale-row {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 6px 16px 16px;
+      scrollbar-width: none;
+    }
+
+    .flash-sale-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .flash-card {
+      width: 130px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .flash-card-img {
+      height: 95px;
+      background: #cbd5e1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+    }
+
+    .badge-discount {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      background: #ef4444;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    .flash-card-body {
+      padding: 8px;
+    }
+
+    .flash-card-body h4 {
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .flash-price {
+      color: var(--primary-blue);
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 3px;
+    }
+
+    .flash-old-price {
+      font-size: 10px;
+      color: #94a3b8;
+      text-decoration: line-through;
+    }
+
+    /* Product Grid */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 8px 16px 16px;
+    }
+
+    .product-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .product-img-box {
+      height: 110px;
+      background: #cbd5e1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+    }
+
+    .badge-product-tag {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      background: #fff;
+      color: #1e293b;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-card-body {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .rating-row {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      margin-bottom: 4px;
+    }
+
+    .rating-row .material-icons {
+      color: #f59e0b;
+      font-size: 13px;
+    }
+
+    .rating-val {
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .rating-count {
+      color: #94a3b8;
+    }
+
+    .product-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      height: 32px;
+    }
+
+    .product-author {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .product-price {
+      color: var(--primary-blue);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .btn-add-cart {
+      background: var(--primary-blue);
+      color: white;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    .btn-add-cart:active {
+      transform: scale(0.9);
+    }
+
+    .btn-add-cart .material-icons {
+      font-size: 14px;
+    }
+
+    /* Guarantee Card */
+    .guarantee-card {
+      margin: 4px 16px 16px;
+      padding: 12px 14px;
+      background: rgba(0, 0, 255, 0.08);
+      border-radius: 10px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .guarantee-card .material-icons {
+      color: var(--primary-blue);
+      font-size: 36px;
+    }
+
+    .guarantee-card h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .guarantee-card p {
+      font-size: 11px;
+      color: #334155;
+      margin-top: 2px;
+      line-height: 1.3;
+    }
+
+    /* 4. PRODUK SCREEN SPECIFIC */
+    .katalog-header {
+      padding: 14px 16px 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .katalog-header h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--dark-blue);
+    }
+
+    .badge-active-prod {
+      margin-left: auto;
+      background: rgba(0, 0, 255, 0.1);
+      color: var(--dark-blue);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+
+    .chips-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 6px 16px;
+      scrollbar-width: none;
+    }
+
+    .chips-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip-item {
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      white-space: nowrap;
+      background: #e2e8f0;
+      color: #475569;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .chip-item.active {
+      background: var(--dark-blue);
+      color: white;
+      font-weight: 700;
+    }
+
+    .sort-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 8px 16px;
+      align-items: center;
+      scrollbar-width: none;
+    }
+
+    .sort-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .sort-chip {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      border-radius: 16px;
+      font-size: 11px;
+      white-space: nowrap;
+      border: 1px solid #cbd5e1;
+      color: #475569;
+      cursor: pointer;
+    }
+
+    .sort-chip.active {
+      background: rgba(0, 0, 255, 0.08);
+      border-color: transparent;
+      color: var(--primary-blue);
+      font-weight: 700;
+    }
+
+    .sort-chip .material-icons {
+      font-size: 14px;
+    }
+
+    .btn-load-more {
+      width: calc(100% - 32px);
+      margin: 12px 16px;
+      height: 44px;
+      background: rgba(0, 0, 255, 0.08);
+      color: var(--dark-blue);
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .prod-footer-text {
+      text-align: center;
+      font-size: 10px;
+      color: #94a3b8;
+      margin-bottom: 16px;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #fff;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 50;
+      border-bottom-left-radius: 40px;
+      border-bottom-right-radius: 40px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-item.active {
+      color: var(--primary-blue);
+      font-weight: 700;
+    }
+
+    .nav-item .material-icons {
+      font-size: 22px;
+    }
+
+    /* 5. NOTIFIKASI SCREEN */
+    .notif-group-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--dark-blue);
+      padding: 12px 16px 6px;
+    }
+
+    .notif-list {
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .notif-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .notif-card.unread {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
+
+    .notif-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .notif-content {
+      flex: 1;
+    }
+
+    .notif-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .notif-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.3;
+    }
+
+    .notif-card:not(.unread) .notif-title {
+      font-weight: 600;
+    }
+
+    .notif-desc {
+      font-size: 12px;
+      color: #475569;
+      margin-top: 3px;
+      line-height: 1.35;
+    }
+
+    .notif-time {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 6px;
+    }
+
+    .notif-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary-blue);
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    /* 6. AKUN SCREEN */
+    .profile-card {
+      margin: 16px;
+      padding: 16px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .profile-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .profile-avatar-wrap {
+      position: relative;
+    }
+
+    .profile-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(0, 0, 139, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--dark-blue);
+      font-size: 38px;
+    }
+
+    .avatar-cam-badge {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary-blue);
+      color: white;
+      border: 2px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    .profile-info h3 {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .profile-info p {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .badge-status-mhs {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 3px 8px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .wallet-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .wallet-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+    }
+
+    .wallet-item-top {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: #94a3b8;
+    }
+
+    .wallet-item-val {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .order-status-card {
+      margin: 0 16px 14px;
+      padding: 16px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+    }
+
+    .order-status-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .order-status-row {
+      display: flex;
+      justify-content: space-between;
+      text-align: center;
+    }
+
+    .order-status-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      color: #334155;
+      cursor: pointer;
+    }
+
+    .order-icon-bubble {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(0, 0, 139, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--dark-blue);
+      position: relative;
+    }
+
+    .badge-count {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: #ef4444;
+      color: white;
+      font-size: 9px;
+      font-weight: 700;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu-group-card {
+      margin: 0 16px 14px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .menu-row {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.15s;
+    }
+
+    .menu-row:last-child {
+      border-bottom: none;
+    }
+
+    .menu-row:hover {
+      background: #f8fafc;
+    }
+
+    .menu-icon-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .menu-text {
+      flex: 1;
+    }
+
+    .menu-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .menu-sub {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 1px;
+    }
+
+    .btn-logout {
+      margin: 0 16px 20px;
+      width: calc(100% - 32px);
+      height: 46px;
+      border: 1px solid #fecaca;
+      background: #fef2f2;
+      color: #dc2626;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: absolute;
+      bottom: 74px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #0f172a;
+      color: #fff;
+      padding: 9px 18px;
+      border-radius: 20px;
+      font-size: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+    }
+
+    .toast.show {
+      display: flex;
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Footer info */
+    .footer-instruction {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 12px;
+      color: #64748b;
+      max-width: 440px;
+    }
+  
+    /* Quick Screens Bar */
+    .quick-screens-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      max-width: 480px;
+      margin-bottom: 12px;
+      padding: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 30px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .quick-pill {
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #94a3b8;
+      border-radius: 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      background: transparent;
+    }
+    .quick-pill:hover, .quick-pill.active {
+      color: #fff;
+      background: var(--primary-blue);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Screen Keranjang */
+    #screen-keranjang {
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 100%;
+    }
+    .cart-header {
+      background: var(--dark-blue);
+      color: #fff;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .cart-header .btn-back {
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }
+    .cart-header-title {
+      flex: 1;
+    }
+    .cart-header-title h3 {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin: 0;
+    }
+    .cart-header-title p {
+      font-size: 11px;
+      opacity: 0.8;
+      margin: 0;
+    }
+    .cart-body {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 90px;
+      background: #f8fafc;
+    }
+    .cart-select-all-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+    }
+    .cart-item-card {
+      background: #fff;
+      border-radius: 12px;
+      margin: 8px 16px;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      transition: all 0.2s;
+    }
+    .cart-item-card.active-selected {
+      border-color: rgba(0, 0, 255, 0.35);
+      background: #ffffff;
+    }
+    .cart-item-seller {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--dark-blue);
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f1f5f9;
+      margin-bottom: 10px;
+    }
+    .cart-item-main {
+      display: flex;
+      gap: 12px;
+    }
+    .cart-item-thumb {
+      width: 70px;
+      height: 70px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .cart-item-thumb .category-badge {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 8px;
+      font-weight: 700;
+      color: #0f172a;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    .cart-item-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .cart-item-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+    .cart-item-variant {
+      font-size: 10px;
+      color: #64748b;
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      width: fit-content;
+      margin-bottom: 6px;
+    }
+    .cart-item-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cart-item-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary-blue);
+    }
+    .qty-control {
+      display: flex;
+      align-items: center;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .qty-btn {
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      cursor: pointer;
+      border: none;
+      font-size: 14px;
+      color: #1e293b;
+      user-select: none;
+      transition: background 0.15s;
+    }
+    .qty-btn:hover {
+      background: #e2e8f0;
+    }
+    .qty-num {
+      width: 26px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .cart-section-box {
+      background: #fff;
+      border-radius: 12px;
+      margin: 8px 16px;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+    }
+    .delivery-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      margin-top: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .delivery-pill.active {
+      border-color: var(--primary-blue);
+      background: rgba(0, 0, 255, 0.04);
+    }
+    .cart-checkout-bar {
+      background: #fff;
+      border-top: 1px solid #e2e8f0;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+      z-index: 10;
+    }
+    .cart-empty-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .custom-cb {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary-blue);
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="top-banner">
+    <h1><span class="material-icons" style="color: #60a5fa;">shopping_bag</span> IAKN Commerce</h1>
+    <p>Simulasi Interaktif UI Flutter IAKN Commerce</p>
+    <div class="badge-status"
+      style="background: rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.4); color: #86efac;">
+      <div class="pulse-dot" style="background: #22c55e; box-shadow: 0 0 8px #22c55e;"></div>
+      <span>Flutter SDK Aktif &amp; Berjalan Lancar</span>
+    </div>
+  </div>
+
+  
+  <!-- Quick Screen Switcher for Testing -->
+  <div class="quick-screens-bar">
+    <button class="quick-pill" onclick="navigateTo('screen-home')">Beranda</button>
+    <button class="quick-pill" onclick="navigateTo('screen-produk')">Katalog Produk</button>
+    <button class="quick-pill" onclick="navigateTo('screen-keranjang')" style="background: rgba(0, 0, 255, 0.3); color: white; font-weight: bold;">🛒 Keranjang</button>
+    <button class="quick-pill" onclick="navigateTo('screen-notifikasi')">Notifikasi</button>
+    <button class="quick-pill" onclick="navigateTo('screen-akun')">Akun Saya</button>
+    <button class="quick-pill" onclick="navigateTo('screen-login')">Login</button>
+  </div>
+
+  <!-- Device Mockup -->
+  <div class="device-frame">
+    <div class="device-notch">
+      <div class="notch-camera"></div>
+      <div class="notch-speaker"></div>
+    </div>
+
+    <div class="screen-content">
+
+      <!-- Toast notification -->
+      <div id="toast" class="toast" onclick="hideToast()" title="Klik untuk menutup notifikasi">
+        <span class="material-icons" style="font-size: 16px; color: #4ade80;">check_circle</span>
+        <span id="toast-msg">Item ditambahkan ke keranjang!</span>
+        <span class="material-icons" style="font-size: 14px; opacity: 0.6; margin-left: 6px;">close</span>
+      </div>
+
+      <!-- 1. SPLASH SCREEN -->
+      <div id="screen-splash" class="screen active">
+        <div id="splash-circle" class="splash-circle"></div>
+        <div id="splash-logo" class="splash-logo-content">
+          <div
+            style="width: 70px; height: 70px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-blue);">
+            <span class="material-icons" style="font-size: 40px;">school</span>
+          </div>
+          <h2 style="font-size: 20px; font-weight: 700;">IAKN Ambon</h2>
+          <p style="font-size: 14px; opacity: 0.9;">IAKN Commerce</p>
+        </div>
+      </div>
+
+      <!-- 2. LOGIN SCREEN -->
+      <div id="screen-login" class="screen">
+        <div class="status-bar light-text">
+          <span>09:41</span>
+          <div class="status-icons">
+            <span class="material-icons">signal_cellular_4_bar</span>
+            <span class="material-icons">wifi</span>
+            <span class="material-icons">battery_full</span>
+          </div>
+        </div>
+
+        <div class="auth-header">
+          <div class="brand-row">
+            <div class="brand-logo">
+              <span class="material-icons">school</span>
+            </div>
+            <div class="brand-text">
+              <h2>IAKN Ambon</h2>
+              <p>IAKN Commerce</p>
+            </div>
+          </div>
+          <div class="auth-illustration">
+            <span class="material-icons" style="font-size: 80px; color: white;">shopping_cart</span>
+          </div>
+        </div>
+
+        <div class="auth-card">
+          <div class="auth-title">Masuk Aplikasi dengan senyum manis</div>
+
+          <div class="form-group">
+            <span class="material-icons input-icon-left">badge</span>
+            <input type="text" class="input-field" placeholder="Enter your username" value="mahasiswa_iakn">
+          </div>
+
+          <div class="form-group">
+            <span class="material-icons input-icon-left">password</span>
+            <input type="password" id="login-password" class="input-field" placeholder="Enter your password"
+              value="••••••••">
+            <span class="material-icons input-icon-right"
+              onclick="togglePassword('login-password', this)">visibility_off</span>
+          </div>
+
+          <div class="auth-options">
+            <label class="remember-me">
+              <input type="checkbox" checked style="accent-color: var(--primary-blue);">
+              <span>ingat saya</span>
+            </label>
+            <span class="forgot-link" onclick="showToast('Fitur reset password dikirim!')">Lupa password ?</span>
+          </div>
+
+          <button class="btn-primary" onclick="navigateTo('screen-home')">Masuk</button>
+
+          <div class="social-divider">Sing in with</div>
+
+          <div class="social-row">
+            <button class="social-btn" onclick="navigateTo('screen-home')">
+              <span class="material-icons" style="color: #ef4444; font-size: 20px;">g_mobiledata</span>
+              <span>Google</span>
+            </button>
+            <button class="social-btn" onclick="navigateTo('screen-home')">
+              <span class="material-icons" style="color: #22c55e; font-size: 18px;">phone</span>
+              <span>Phone</span>
+            </button>
+          </div>
+
+          <div class="auth-footer">
+            Belum punya akun? <a onclick="navigateTo('screen-register')">Daftar</a>
+          </div>
+
+          <div class="copy-text">Copy&copy;Sisfo2023</div>
+        </div>
+      </div>
+
+      <!-- 3. REGISTER SCREEN -->
+      <div id="screen-register" class="screen">
+        <div class="status-bar light-text">
+          <span>09:41</span>
+          <div class="status-icons">
+            <span class="material-icons">signal_cellular_4_bar</span>
+            <span class="material-icons">wifi</span>
+            <span class="material-icons">battery_full</span>
+          </div>
+        </div>
+
+        <div class="auth-header">
+          <div class="brand-row">
+            <div class="brand-logo">
+              <span class="material-icons">school</span>
+            </div>
+            <div class="brand-text">
+              <h2>IAKN Ambon</h2>
+              <p>IAKN Commerce</p>
+            </div>
+          </div>
+          <div class="auth-illustration">
+            <span class="material-icons" style="font-size: 80px; color: white;">shopping_cart</span>
+          </div>
+        </div>
+
+        <div class="auth-card">
+          <div class="auth-title" style="text-align: left; font-size: 16px;">Daftar Akun</div>
+
+          <div class="form-group">
+            <span class="material-icons input-icon-left">badge</span>
+            <input type="text" class="input-field" placeholder="Enter your username">
+          </div>
+
+          <div class="form-group">
+            <span class="material-icons input-icon-left">password</span>
+            <input type="password" id="reg-pass" class="input-field" placeholder="Enter your password">
+            <span class="material-icons input-icon-right"
+              onclick="togglePassword('reg-pass', this)">visibility_off</span>
+          </div>
+
+          <div class="form-group">
+            <span class="material-icons input-icon-left">password</span>
+            <input type="password" id="reg-confirm" class="input-field" placeholder="Enter your confir-password">
+            <span class="material-icons input-icon-right"
+              onclick="togglePassword('reg-confirm', this)">visibility_off</span>
+          </div>
+
+          <button class="btn-primary" style="margin-top: 14px;"
+            onclick="showToast('Akun berhasil dibuat! Silakan masuk.'); navigateTo('screen-login')">Daftar</button>
+
+          <div class="auth-footer" style="margin-top: 20px;">
+            Sudah punya akun? <a onclick="navigateTo('screen-login')">Masuk di sini</a>
+          </div>
+
+          <div class="copy-text">Copy&copy;Sisfo2023</div>
+        </div>
+      </div>
+
+      <!-- 4. HOME SCREEN -->
+      <div id="screen-home" class="screen">
+        <!-- AppBar -->
+        <div class="appbar">
+          <div class="appbar-top">
+            <div class="avatar">
+              <span class="material-icons">person</span>
+            </div>
+            <div class="user-info">
+              <h3>IAKN COMMERCE</h3>
+              <p>Username (Mahasiswa)</p>
+            </div>
+            <div class="cart-badge-container" onclick="navigateTo('screen-keranjang')">
+              <span class="material-icons" style="font-size: 28px;">shopping_cart</span>
+              <div class="cart-badge">3</div>
+            </div>
+          </div>
+          <div class="search-box">
+            <span class="material-icons" style="color: var(--primary-blue);">search</span>
+            <input type="text" id="home-search-input" placeholder="Cari produk di IAKN Ambon..." oninput="handleHomeSearch(this.value)">
+            <span class="material-icons" id="home-search-clear" style="cursor: pointer; display: none; color: #94a3b8;" onclick="clearHomeSearch()">close</span>
+            <span class="material-icons" id="home-search-tune" style="cursor: pointer;" onclick="showToast('Filter kategori aktif')">tune</span>
+          </div>
+        </div>
+
+        <!-- Scrollable Body -->
+        <div class="scroll-body">
+          <div id="home-default-view">
+          <!-- Info Banner -->
+          <div class="info-banner">
+            <span class="material-icons">campaign</span>
+            <div class="info-banner-text">
+              <h4>INFO KAMPUS TERKINI</h4>
+              <p>Bazar Dies Natalis dibuka di Gedung...</p>
+            </div>
+            <button class="btn-cek" onclick="showToast('Membuka pengumuman kampus')">Cek</button>
+          </div>
+
+          <!-- Categories -->
+          <div class="section-header">
+            <h3>Kategori Pilihan</h3>
+            <span onclick="navigateTo('screen-produk')">Geser &gt;</span>
+          </div>
+          <div class="categories-row">
+            <div class="category-item" onclick="filterHomeByCategory('Jasa/Layanan')">
+              <div class="category-icon"><span class="material-icons">handshake</span></div>
+              <div class="category-label">Jasa/Layanan</div>
+            </div>
+            <div class="category-item" onclick="filterHomeByCategory('Desain Grafis')">
+              <div class="category-icon"><span class="material-icons">design_services</span></div>
+              <div class="category-label">Desain Grafis</div>
+            </div>
+            <div class="category-item" onclick="filterHomeByCategory('Alat Musik')">
+              <div class="category-icon"><span class="material-icons">music_note</span></div>
+              <div class="category-label">Alat Musik</div>
+            </div>
+            <div class="category-item" onclick="filterHomeByCategory('Buku/Ilmiah')">
+              <div class="category-icon"><span class="material-icons">menu_book</span></div>
+              <div class="category-label">Buku/Ilmiah</div>
+            </div>
+            <div class="category-item" onclick="filterHomeByCategory('Tek. Edukasi')">
+              <div class="category-icon"><span class="material-icons">computer</span></div>
+              <div class="category-label">Tek. Edukasi</div>
+            </div>
+            <div class="category-item" onclick="filterHomeByCategory('Merchandise')">
+              <div class="category-icon"><span class="material-icons">checkroom</span></div>
+              <div class="category-label">Merchandise</div>
+            </div>
+          </div>
+
+          <!-- Promo Banner -->
+          <div class="promo-card">
+            <div class="promo-tag-row">
+              <div class="tag-pill">DIES NATALIS EXPO</div>
+              <div class="promo-discount">Diskon 35%</div>
+            </div>
+            <h3>Pekan Inovasi &amp; Kewirausahaan<br>Mahasiswa</h3>
+            <p>Karya orisinal sivitas akademika IAKN Ambon: literatur teologi, media ajar,...</p>
+            <button class="btn-voucher" onclick="showToast('Voucher 35% berhasil diklaim!')">
+              <span class="material-icons" style="font-size: 16px;">local_offer</span>
+              <span>Klaim Voucher</span>
+            </button>
+          </div>
+
+          <!-- Flash Sale -->
+          <div class="flash-sale-header">
+            <span class="material-icons" style="color: #ef4444; font-size: 20px;">local_fire_department</span>
+            <h3>Flash Sale Dies Natalis</h3>
+            <div class="timer-container">
+              <div class="timer-box" id="h-box">04</div> :
+              <div class="timer-box" id="m-box">15</div> :
+              <div class="timer-box" id="s-box">29</div>
+            </div>
+          </div>
+
+          <div class="flash-sale-row">
+            <div class="flash-card" onclick="addProductToCartHome('prod_6')" style="cursor: pointer;" title="Tambah ke Keranjang">
+              <div class="flash-card-img" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                <span class="material-icons" style="color: white; font-size: 36px;">checkroom</span>
+                <div class="badge-discount">-40%</div>
+              </div>
+              <div class="flash-card-body">
+                <h4>Hoodie Dies Natalis</h4>
+                <div class="flash-price">Rp 99rb</div>
+                <div class="flash-old-price">165rb</div>
+              </div>
+            </div>
+
+            <div class="flash-card" onclick="addProductToCartHome('prod_7')" style="cursor: pointer;" title="Tambah ke Keranjang">
+              <div class="flash-card-img" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+                <span class="material-icons" style="color: white; font-size: 36px;">local_cafe</span>
+                <div class="badge-discount">-50%</div>
+              </div>
+              <div class="flash-card-body">
+                <h4>Tumbler Edisi Ambon</h4>
+                <div class="flash-price">Rp 45rb</div>
+                <div class="flash-old-price">90rb</div>
+              </div>
+            </div>
+
+            <div class="flash-card" onclick="addProductToCartHome('prod_8')" style="cursor: pointer;" title="Tambah ke Keranjang">
+              <div class="flash-card-img" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);">
+                <span class="material-icons" style="color: white; font-size: 36px;">apartment</span>
+                <div class="badge-discount">-50%</div>
+              </div>
+              <div class="flash-card-body">
+                <h4>Miniature Ambon</h4>
+                <div class="flash-price">Rp 50rb</div>
+                <div class="flash-old-price">100rb</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Popular Products -->
+          <div class="section-header">
+            <div>
+              <h3>Produk Terpopuler Kampus</h3>
+              <p style="font-size: 11px; color: #64748b;">Karya unggulan mahasiswa dan dosen</p>
+            </div>
+            <span onclick="navigateTo('screen-produk')">Lihat Semua &gt;</span>
+          </div>
+
+          <div class="products-grid">
+            <!-- Product 1 -->
+            <div class="product-card">
+              <div class="product-img-box" style="background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);">
+                <span class="material-icons" style="color: #854d0e; font-size: 42px;">auto_stories</span>
+                <div class="badge-product-tag">Buku Ilmiah</div>
+              </div>
+              <div class="product-card-body">
+                <div class="rating-row">
+                  <span class="material-icons">star</span>
+                  <span class="rating-val">4.9</span>
+                  <span class="rating-count">(120)</span>
+                </div>
+                <div class="product-title">Antropologi Musik Maluku &amp; Nusantara</div>
+                <div class="product-author">Oleh: Prodi Musik Gereja</div>
+                <div class="product-bottom">
+                  <div class="product-price">Rp 85.000</div>
+                  <button class="btn-add-cart" onclick="addProductToCartHome('prod_1')">
+                    <span class="material-icons">shopping_cart</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="product-card">
+              <div class="product-img-box" style="background: linear-gradient(135deg, #e9d5ff 0%, #c084fc 100%);">
+                <span class="material-icons" style="color: #6b21a8; font-size: 42px;">palette</span>
+                <div class="badge-product-tag">Jasa Grafis</div>
+              </div>
+              <div class="product-card-body">
+                <div class="rating-row">
+                  <span class="material-icons">star</span>
+                  <span class="rating-val">4.8</span>
+                  <span class="rating-count">(85)</span>
+                </div>
+                <div class="product-title">Desain Banner &amp; Publikasi Acara...</div>
+                <div class="product-author">Kreatif Lab Mahasiswa</div>
+                <div class="product-bottom">
+                  <div class="product-price">Rp 50.000</div>
+                  <button class="btn-add-cart" onclick="addProductToCartHome('prod_2')">
+                    <span class="material-icons">shopping_cart</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="product-card">
+              <div class="product-img-box" style="background: linear-gradient(135deg, #fed7aa 0%, #fb923c 100%);">
+                <span class="material-icons" style="color: #9a3412; font-size: 42px;">music_note</span>
+                <div class="badge-product-tag">Alat Musik</div>
+              </div>
+              <div class="product-card-body">
+                <div class="rating-row">
+                  <span class="material-icons">star</span>
+                  <span class="rating-val">5.0</span>
+                  <span class="rating-count">(25)</span>
+                </div>
+                <div class="product-title">Tifa Maluku Kayu Ukir Asli</div>
+                <div class="product-author">Bengkel Seni Kampus</div>
+                <div class="product-bottom">
+                  <div class="product-price">Rp 350.000</div>
+                  <button class="btn-add-cart" onclick="addProductToCartHome('prod_3')">
+                    <span class="material-icons">shopping_cart</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Product 4 -->
+            <div class="product-card">
+              <div class="product-img-box" style="background: linear-gradient(135deg, #bfdbfe 0%, #60a5fa 100%);">
+                <span class="material-icons" style="color: #1e40af; font-size: 42px;">laptop_chromebook</span>
+                <div class="badge-product-tag">Tek. Edukasi</div>
+              </div>
+              <div class="product-card-body">
+                <div class="rating-row">
+                  <span class="material-icons">star</span>
+                  <span class="rating-val">4.9</span>
+                  <span class="rating-count">(42)</span>
+                </div>
+                <div class="product-title">Media Belajar Interaktif PAUD...</div>
+                <div class="product-author">Laboratorium FKIP IAKN</div>
+                <div class="product-bottom">
+                  <div class="product-price">Rp 125.000</div>
+                  <button class="btn-add-cart" onclick="addProductToCartHome('prod_4')">
+                    <span class="material-icons">shopping_cart</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Guarantee -->
+          <div class="guarantee-card">
+            <span class="material-icons">verified_user</span>
+            <div>
+              <h4>Jaminan Kualitas Akademik</h4>
+              <p>Setiap transaksi mendukung langsung dana beasiswa dan riset kreatif mahasiswa IAKN Ambon.</p>
+            </div>
+          </div>
+          </div> <!-- End home-default-view -->
+
+          <!-- Home Search Results View -->
+          <div id="home-search-view" style="display: none; padding: 14px 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+              <div>
+                <h3 id="home-search-title" style="font-size: 14px; font-weight: 700; color: var(--dark-blue); margin: 0;">Hasil Pencarian</h3>
+                <p id="home-search-count-label" style="font-size: 11px; color: #64748b; margin: 2px 0 0;">0 produk ditemukan</p>
+              </div>
+              <button onclick="clearHomeSearch()" style="background: #fee2e2; border: 1px solid #fca5a5; color: #dc2626; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px;">
+                <span class="material-icons" style="font-size: 14px;">close</span> Reset
+              </button>
+            </div>
+
+            <!-- Category Filter Chips in Search View -->
+            <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 12px;" id="home-search-chips">
+              <!-- Dynamically populated or rendered -->
+            </div>
+
+            <!-- Products Grid for Search Results -->
+            <div class="products-grid" id="home-search-grid">
+              <!-- Dynamically rendered -->
+            </div>
+
+            <!-- Empty Search State -->
+            <div id="home-search-empty" class="cart-empty-state" style="display: none; padding: 36px 12px; text-align: center;">
+              <div style="width: 72px; height: 72px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px;">
+                <span class="material-icons" style="font-size: 38px; color: #94a3b8;">search_off</span>
+              </div>
+              <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">Produk Tidak Ditemukan</h3>
+              <p style="font-size: 11px; color: #64748b; line-height: 1.4; max-width: 250px; margin: 0 auto 16px;">
+                Tidak ada produk yang cocok dengan pencarian Anda.<br>Coba kata kunci: <strong>Buku, Tifa, Desain, Hoodie,</strong> atau <strong>Edukasi</strong>.
+              </p>
+              <button class="btn-primary" style="width: auto; padding: 8px 20px; font-size: 12px; margin: 0 auto;" onclick="clearHomeSearch()">
+                Tampilkan Semua Produk
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+          <div class="nav-item active" onclick="navigateTo('screen-home')">
+            <span class="material-icons">store</span>
+            <span>Home</span>
+          </div>
+          <div class="nav-item" onclick="navigateTo('screen-produk')">
+            <span class="material-icons">category</span>
+            <span>Produk</span>
+          </div>
+          <div class="nav-item" onclick="navigateTo('screen-notifikasi')">
+            <span class="material-icons">notifications_none</span>
+            <span>Notifikasi</span>
+          </div>
+          <div class="nav-item" onclick="showToast('Akun profil pengguna')">
+            <span class="material-icons">person_outline</span>
+            <span>Akun</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. PRODUK SCREEN -->
+      <div id="screen-produk" class="screen">
+        <!-- AppBar -->
+        <div class="appbar">
+          <div class="appbar-top">
+            <div class="avatar">
+              <span class="material-icons">person</span>
+            </div>
+            <div class="user-info">
+              <h3>IAKN COMMERCE</h3>
+              <p>Username (Mahasiswa)</p>
+            </div>
+            <div class="cart-badge-container" onclick="navigateTo('screen-keranjang')">
+              <span class="material-icons" style="font-size: 28px;">shopping_cart</span>
+              <div class="cart-badge">3</div>
+            </div>
+          </div>
+          <div class="search-box">
+            <span class="material-icons" style="color: var(--primary-blue);">search</span>
+            <input type="text" id="home-search-input" placeholder="Cari produk di IAKN Ambon..." oninput="handleHomeSearch(this.value)">
+            <span class="material-icons" id="home-search-clear" style="cursor: pointer; display: none; color: #94a3b8;" onclick="clearHomeSearch()">close</span>
+            <span class="material-icons" id="home-search-tune" style="cursor: pointer;" onclick="showToast('Filter kategori aktif')">tune</span>
+          </div>
+        </div>
+
+        <div class="scroll-body">
+          <div class="katalog-header">
+            <span class="material-icons" style="color: var(--dark-blue);">shopping_bag</span>
+            <h3>Katalog Produk Kampus</h3>
+            <div class="badge-active-prod">64 Produk Aktif</div>
+          </div>
+
+          <!-- Category Chips -->
+          <div class="chips-row">
+            <div class="chip-item active" onclick="filterChip(this)">Semua</div>
+            <div class="chip-item" onclick="filterChip(this)">Buku/Ilmiah</div>
+            <div class="chip-item" onclick="filterChip(this)">Alat Musik Tradisional</div>
+            <div class="chip-item" onclick="filterChip(this)">Jasa &amp;...</div>
+          </div>
+
+          <!-- Sort Chips -->
+          <div class="sort-row">
+            <div class="sort-chip active" onclick="sortChip(this)">
+              <span class="material-icons">auto_awesome</span>
+              <span>Terbaru</span>
+            </div>
+            <div class="sort-chip" onclick="sortChip(this)">
+              <span class="material-icons">trending_up</span>
+              <span>Terlaris</span>
+            </div>
+            <div class="sort-chip" onclick="sortChip(this)">
+              <span class="material-icons">sell</span>
+              <span>Harga Terendah</span>
+            </div>
+            <div class="sort-chip" onclick="sortChip(this)">
+              <span class="material-icons">star_outline</span>
+              <span>Rating</span>
+            </div>
+            <span class="material-icons" style="color: #64748b; font-size: 18px; margin-left: 4px; cursor: pointer;"
+              onclick="showToast('Urutan disesuaikan')">filter_list</span>
+          </div>
+
+          <!-- Products Grid -->
+          <div class="products-grid">
+            <!-- P1 -->
+            <div class="product-card">
+              <div class="product-img-box" style="background: linear-gradient(135deg, #dcfce7 0%, #86efac 100%);">
+                <span class="material-icons" style="color: #166534; font-size: 42px;">sports_handball</span>
+                <div class="badge-product-tag" style="background: #22c55e; color: white;">Handmade Kampus</div>
+              </div>
+              <div class="product-card-body">
+                <div class="rating-row">
+                  <span class="material-icons">star</span>
+                  <span class="rating-val">4.9</span>
+                  <span class="rating-count">(48)</span>
+                </div>
+                <div class="product-title">Tifa Maluku Tradisional Kayu...</div>
+                <div class="product-author" style="display: flex; align-items: center; gap: 3px;">
+                  <span class="material-icons" style="font-size: 12px; color: #3b82f6;">verified</span>
+                  <span>Galeri Seni Musik IAKN</span>
+                </div>
+                <div class="product-bottom">
+                  <div class="product-price">Rp 320.000</div>
+                  <button class="btn-add-cart" onclick="addProductToCartHome('prod_3')">
+                    <span class="material-icons">shopping_cart</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- P2 -->
+            <div class="product-card">
+              <div class="product-img-box" style="background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%);">
+                <span class="material-icons" style="color: #1e40af; font-size: 42px;">menu_book</span>
+                <div class="badge-product-tag" style="background: #3b82f6; color: white;">Karya Dosen</div>
+              </div>
+              <div class="product-card-body">
+                <div class="rating-row">
+                  <span class="material-icons">star</span>
+                  <span class="rating-val">5.0</span>
+                  <span class="rating-count">(82)</span>
+                </div>
+                <div class="product-title">Buku Teologi Kontekstual &amp;...</div>
+                <div class="product-author" style="display: flex; align-items: center; gap: 3px;">
+                  <span class="material-icons" style="font-size: 12px; color: #64748b;">school</span>
+                  <span>Penulis: Dosen IAKN</span>
+                </div>
+                <div class="product-bottom">
+                  <div class="product-price">Rp 95.000</div>
+                  <button class="btn-add-cart" onclick="addProductToCartHome('prod_5')">
+                    <span class="material-icons">shopping_cart</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- P3 -->
+            <div class="product-card">
+              <div class="product-img-box" style="background: linear-gradient(135deg, #f3e8ff 0%, #d8b4fe 100%);">
+                <span class="material-icons" style="color: #7e22ce; font-size: 42px;">translate</span>
+                <div class="badge-product-tag" style="background: #a855f7; color: white;">Layanan Kilat</div>
+              </div>
+              <div class="product-card-body">
+                <div class="rating-row">
+                  <span class="material-icons">star</span>
+                  <span class="rating-val">4.9</span>
+                  <span class="rating-count">(64)</span>
+                </div>
+                <div class="product-title">Jasa Translate Naskah Ilmiah &amp;...</div>
+                <div class="product-author" style="display: flex; align-items: center; gap: 3px;">
+                  <span class="material-icons" style="font-size: 12px; color: #64748b;">translate</span>
+                  <span>Unit Bahasa Kampus</span>
+                </div>
+                <div class="product-bottom">
+                  <div class="product-price">Rp 35.000</div>
+                  <button class="btn-add-cart" onclick="showToast('Jasa Translate dipesan!')">
+                    <span class="material-icons">shopping_cart</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- P4 -->
+            <div class="product-card">
+              <div class="product-img-box" style="background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%);">
+                <span class="material-icons" style="color: #b45309; font-size: 42px;">music_video</span>
+                <div class="badge-product-tag" style="background: #15803d; color: white;">Karya Mahasiswa</div>
+              </div>
+              <div class="product-card-body">
+                <div class="rating-row">
+                  <span class="material-icons">star</span>
+                  <span class="rating-val">4.8</span>
+                  <span class="rating-count">(19)</span>
+                </div>
+                <div class="product-title">Gitar Akustik Custom Mahasiswa</div>
+                <div class="product-author" style="display: flex; align-items: center; gap: 3px;">
+                  <span class="material-icons" style="font-size: 12px; color: #64748b;">palette</span>
+                  <span>Prodi Pendidikan Seni</span>
+                </div>
+                <div class="product-bottom">
+                  <div class="product-price">Rp 750.000</div>
+                  <button class="btn-add-cart" onclick="showToast('Gitar Akustik ditambahkan!')">
+                    <span class="material-icons">shopping_cart</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- P5 -->
+            <div class="product-card">
+              <div class="product-img-box" style="background: linear-gradient(135deg, #fce7f3 0%, #f472b6 100%);">
+                <span class="material-icons" style="color: #9d174d; font-size: 42px;">local_mall</span>
+                <div class="badge-product-tag" style="background: #ec4899; color: white;">Merchandise BEM</div>
+              </div>
+              <div class="product-card-body">
+                <div class="rating-row">
+                  <span class="material-icons">star</span>
+                  <span class="rating-val">4.7</span>
+                  <span class="rating-count">(53)</span>
+                </div>
+                <div class="product-title">Totebag Kanvas Motif Tenun Maluku</div>
+                <div class="product-author" style="display: flex; align-items: center; gap: 3px;">
+                  <span class="material-icons" style="font-size: 12px; color: #64748b;">group</span>
+                  <span>BEM IAKN Ambon</span>
+                </div>
+                <div class="product-bottom">
+                  <div class="product-price">Rp 45.000</div>
+                  <button class="btn-add-cart" onclick="showToast('Totebag ditambahkan!')">
+                    <span class="material-icons">shopping_cart</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- P6 -->
+            <div class="product-card">
+              <div class="product-img-box" style="background: linear-gradient(135deg, #e0f2fe 0%, #7dd3fc 100%);">
+                <span class="material-icons" style="color: #0369a1; font-size: 42px;">memory</span>
+                <div class="badge-product-tag" style="background: #0284c7; color: white;">Lisensi Edu</div>
+              </div>
+              <div class="product-card-body">
+                <div class="rating-row">
+                  <span class="material-icons">star</span>
+                  <span class="rating-val">4.9</span>
+                  <span class="rating-count">(31)</span>
+                </div>
+                <div class="product-title">Software Pembelajaran...</div>
+                <div class="product-author" style="display: flex; align-items: center; gap: 3px;">
+                  <span class="material-icons" style="font-size: 12px; color: #64748b;">computer</span>
+                  <span>Lab Komputer IAKN</span>
+                </div>
+                <div class="product-bottom">
+                  <div class="product-price">Rp 150.000</div>
+                  <button class="btn-add-cart" onclick="showToast('Software Pembelajaran ditambahkan!')">
+                    <span class="material-icons">shopping_cart</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-load-more" onclick="showToast('Memuat produk lainnya...')">
+            <span class="material-icons">keyboard_arrow_down</span>
+            <span>Tampilkan Lebih Banyak (58)</span>
+          </button>
+          <div class="prod-footer-text">Menampilkan 6 dari 64 produk sivitas akademika</div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="navigateTo('screen-home')">
+            <span class="material-icons">store</span>
+            <span>Home</span>
+          </div>
+          <div class="nav-item active" onclick="navigateTo('screen-produk')">
+            <span class="material-icons">category</span>
+            <span>Produk</span>
+          </div>
+          <div class="nav-item" onclick="navigateTo('screen-notifikasi')">
+            <span class="material-icons">notifications_none</span>
+            <span>Notifikasi</span>
+          </div>
+          <div class="nav-item" onclick="showToast('Akun profil pengguna')">
+            <span class="material-icons">person_outline</span>
+            <span>Akun</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. NOTIFIKASI SCREEN -->
+      <div id="screen-notifikasi" class="screen">
+        <div class="appbar">
+          <div class="appbar-top">
+            <div class="avatar">
+              <span class="material-icons">person</span>
+            </div>
+            <div class="user-info">
+              <h3>NOTIFIKASI</h3>
+              <p>Pembaruan aktivitas &amp; info kampus</p>
+            </div>
+            <span class="material-icons" style="font-size: 24px; cursor: pointer;" title="Tandai semua dibaca"
+              onclick="markAllNotifsRead()">done_all</span>
+          </div>
+          <div class="search-box">
+            <span class="material-icons">search</span>
+            <input type="text" placeholder="Cari riwayat notifikasi...">
+          </div>
+        </div>
+
+        <div class="scroll-body">
+          <div class="chips-row" style="margin-top: 8px;">
+            <div class="chip-item active" onclick="filterNotif(this, 'all')">Semua <span id="notif-badge"
+                style="background: var(--primary-blue); color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: 4px;">3</span>
+            </div>
+            <div class="chip-item" onclick="filterNotif(this, 'transaksi')">Transaksi</div>
+            <div class="chip-item" onclick="filterNotif(this, 'promo')">Promo &amp; Diskon</div>
+            <div class="chip-item" onclick="filterNotif(this, 'kampus')">Info Kampus</div>
+          </div>
+
+          <div class="notif-group-title">Hari Ini</div>
+          <div class="notif-list">
+            <div class="notif-card unread" data-cat="transaksi" onclick="readNotif(this)">
+              <div class="notif-icon-box" style="background: rgba(59, 130, 246, 0.15); color: #2563eb;">
+                <span class="material-icons">local_shipping</span>
+              </div>
+              <div class="notif-content">
+                <div class="notif-title-row">
+                  <div class="notif-title">Pesanan Sedang Dikirim</div>
+                  <div class="notif-dot"></div>
+                </div>
+                <div class="notif-desc">Paket 'Tifa Maluku Kayu Ukir Asli' Anda sedang dalam perjalanan oleh kurir
+                  kampus.</div>
+                <div class="notif-time">10 menit yang lalu</div>
+              </div>
+            </div>
+
+            <div class="notif-card unread" data-cat="promo" onclick="readNotif(this)">
+              <div class="notif-icon-box" style="background: rgba(249, 115, 22, 0.15); color: #ea580c;">
+                <span class="material-icons">local_offer</span>
+              </div>
+              <div class="notif-content">
+                <div class="notif-title-row">
+                  <div class="notif-title">Voucher Dies Natalis Tersedia!</div>
+                  <div class="notif-dot"></div>
+                </div>
+                <div class="notif-desc">Klaim voucher diskon 35% untuk semua produk buku teologi &amp; literatur ilmiah
+                  hari ini.</div>
+                <div class="notif-time">1 jam yang lalu</div>
+              </div>
+            </div>
+
+            <div class="notif-card unread" data-cat="kampus" onclick="readNotif(this)">
+              <div class="notif-icon-box" style="background: rgba(168, 85, 247, 0.15); color: #9333ea;">
+                <span class="material-icons">campaign</span>
+              </div>
+              <div class="notif-content">
+                <div class="notif-title-row">
+                  <div class="notif-title">Bazar Kampus Telah Dibuka</div>
+                  <div class="notif-dot"></div>
+                </div>
+                <div class="notif-desc">Kunjungi stan pameran kewirausahaan mahasiswa di Gedung Auditorium IAKN Ambon.
+                </div>
+                <div class="notif-time">4 jam yang lalu</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="notif-group-title" style="margin-top: 10px;">Minggu Ini</div>
+          <div class="notif-list">
+            <div class="notif-card" data-cat="transaksi" onclick="readNotif(this)">
+              <div class="notif-icon-box" style="background: rgba(34, 197, 94, 0.15); color: #16a34a;">
+                <span class="material-icons">check_circle</span>
+              </div>
+              <div class="notif-content">
+                <div class="notif-title-row">
+                  <div class="notif-title">Pembayaran Berhasil</div>
+                </div>
+                <div class="notif-desc">Pembayaran untuk 'Antropologi Musik Maluku' sebesar Rp 85.000 telah
+                  terverifikasi.</div>
+                <div class="notif-time">Kemarin, 14:20</div>
+              </div>
+            </div>
+
+            <div class="notif-card" data-cat="promo" onclick="readNotif(this)">
+              <div class="notif-icon-box" style="background: rgba(239, 68, 68, 0.15); color: #dc2626;">
+                <span class="material-icons">local_fire_department</span>
+              </div>
+              <div class="notif-content">
+                <div class="notif-title-row">
+                  <div class="notif-title">Flash Sale Dimulai!</div>
+                </div>
+                <div class="notif-desc">Dapatkan Hoodie Dies Natalis seharga Rp 99rb sebelum kehabisan kuota flash sale.
+                </div>
+                <div class="notif-time">2 hari yang lalu</div>
+              </div>
+            </div>
+
+            <div class="notif-card" data-cat="kampus" onclick="readNotif(this)">
+              <div class="notif-icon-box" style="background: rgba(20, 184, 166, 0.15); color: #0d9488;">
+                <span class="material-icons">system_update</span>
+              </div>
+              <div class="notif-content">
+                <div class="notif-title-row">
+                  <div class="notif-title">Pembaruan Aplikasi v1.0.1</div>
+                </div>
+                <div class="notif-desc">Peningkatan performa rendering sliver dan pengoptimalan scrolling telah
+                  diterapkan.</div>
+                <div class="notif-time">3 hari yang lalu</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="navigateTo('screen-home')">
+            <span class="material-icons">store</span>
+            <span>Home</span>
+          </div>
+          <div class="nav-item" onclick="navigateTo('screen-produk')">
+            <span class="material-icons">category</span>
+            <span>Produk</span>
+          </div>
+          <div class="nav-item active" onclick="navigateTo('screen-notifikasi')">
+            <span class="material-icons">notifications</span>
+            <span>Notifikasi</span>
+          </div>
+          <div class="nav-item" onclick="navigateTo('screen-akun')">
+            <span class="material-icons">person_outline</span>
+            <span>Akun</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. AKUN SCREEN -->
+      <div id="screen-akun" class="screen">
+        <div class="appbar" style="padding-bottom: 16px;">
+          <div class="appbar-top">
+            <div class="user-info">
+              <h3>PROFIL SAYA</h3>
+              <p>Kelola akun &amp; transaksi kampus</p>
+            </div>
+            <span class="material-icons" style="font-size: 22px; cursor: pointer;"
+              onclick="showToast('Membuka pengaturan profil')">settings</span>
+          </div>
+        </div>
+
+        <div class="scroll-body">
+          <!-- Profile Card -->
+          <div class="profile-card">
+            <div class="profile-top">
+              <div class="profile-avatar-wrap">
+                <div class="profile-avatar">
+                  <span class="material-icons" style="font-size: 38px;">person</span>
+                </div>
+                <div class="avatar-cam-badge">
+                  <span class="material-icons" style="font-size: 11px;">camera_alt</span>
+                </div>
+              </div>
+              <div class="profile-info">
+                <h3>Mahasiswa IAKN <span class="material-icons" style="color: #3b82f6; font-size: 16px;">verified</span>
+                </h3>
+                <p>NIM: 202301048 • @mahasiswa_iakn</p>
+                <div class="badge-status-mhs">Mahasiswa Aktif (Seni Musik)</div>
+              </div>
+            </div>
+
+            <div class="wallet-row">
+              <div class="wallet-item" onclick="showToast('Top up saldo Pay')">
+                <div class="wallet-item-top">
+                  <span class="material-icons"
+                    style="font-size: 14px; color: var(--primary-blue);">account_balance_wallet</span>
+                  <span>Saldo Pay</span>
+                </div>
+                <div class="wallet-item-val">Rp 245.000</div>
+              </div>
+              <div style="height: 28px; width: 1px; background: #e2e8f0;"></div>
+              <div class="wallet-item" onclick="showToast('Koin reward kampus')">
+                <div class="wallet-item-top">
+                  <span class="material-icons" style="font-size: 14px; color: #d97706;">stars</span>
+                  <span>Koin</span>
+                </div>
+                <div class="wallet-item-val">1.250</div>
+              </div>
+              <div style="height: 28px; width: 1px; background: #e2e8f0;"></div>
+              <div class="wallet-item" onclick="showToast('Voucher belanja Anda')">
+                <div class="wallet-item-top">
+                  <span class="material-icons" style="font-size: 14px; color: #ea580c;">confirmation_number</span>
+                  <span>Voucher</span>
+                </div>
+                <div class="wallet-item-val">3 Aktif</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pesanan Saya -->
+          <div class="order-status-card">
+            <div class="order-status-header">
+              <span>Pesanan Saya</span>
+              <span style="color: var(--primary-blue); font-size: 11px; cursor: pointer;"
+                onclick="showToast('Membuka riwayat pesanan')">Riwayat &gt;</span>
+            </div>
+            <div class="order-status-row">
+              <div class="order-status-item" onclick="showToast('1 Pesanan Menunggu Pembayaran')">
+                <div class="order-icon-bubble">
+                  <span class="material-icons">payment</span>
+                  <div class="badge-count">1</div>
+                </div>
+                <span>Belum Bayar</span>
+              </div>
+              <div class="order-status-item" onclick="showToast('Tidak ada pesanan diproses')">
+                <div class="order-icon-bubble">
+                  <span class="material-icons">inventory_2</span>
+                </div>
+                <span>Diproses</span>
+              </div>
+              <div class="order-status-item" onclick="showToast('1 Pesanan sedang dikirim')">
+                <div class="order-icon-bubble">
+                  <span class="material-icons">local_shipping</span>
+                  <div class="badge-count">1</div>
+                </div>
+                <span>Dikirim</span>
+              </div>
+              <div class="order-status-item" onclick="showToast('Riwayat pesanan selesai')">
+                <div class="order-icon-bubble">
+                  <span class="material-icons">assignment_turned_in</span>
+                </div>
+                <span>Selesai</span>
+              </div>
+              <div class="order-status-item" onclick="showToast('2 Pesanan siap diulas')">
+                <div class="order-icon-bubble">
+                  <span class="material-icons">star_outline</span>
+                  <div class="badge-count">2</div>
+                </div>
+                <span>Beri Nilai</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Menu Group 1: Aktivitas -->
+          <div style="padding: 0 20px 8px; font-size: 11px; font-weight: 700; color: #94a3b8;">Aktivitas &amp; Fitur
+            Kampus</div>
+          <div class="menu-group-card">
+            <div class="menu-row" onclick="showToast('Fitur stan &amp; penjualan produk mahasiswa')">
+              <div class="menu-icon-box" style="background: rgba(0, 0, 255, 0.08); color: var(--primary-blue);">
+                <span class="material-icons">storefront</span>
+              </div>
+              <div class="menu-text">
+                <div class="menu-title" style="color: var(--dark-blue); font-weight: 700;">Buka Stan / Jual Produk
+                  Mahasiswa</div>
+                <div class="menu-sub">Daftarkan karya seni, buku, atau jasa Anda</div>
+              </div>
+              <span class="material-icons" style="color: #94a3b8; font-size: 18px;">chevron_right</span>
+            </div>
+            <div class="menu-row" onclick="showToast('Wishlist: 5 barang tersimpan')">
+              <div class="menu-icon-box" style="background: rgba(236, 72, 153, 0.1); color: #db2777;">
+                <span class="material-icons">favorite_border</span>
+              </div>
+              <div class="menu-text">
+                <div class="menu-title">Wishlist Produk Favorit</div>
+                <div class="menu-sub">5 barang tersimpan</div>
+              </div>
+              <span class="material-icons" style="color: #94a3b8; font-size: 18px;">chevron_right</span>
+            </div>
+            <div class="menu-row" onclick="showToast('Membuka seluruh riwayat transaksi')">
+              <div class="menu-icon-box" style="background: rgba(13, 148, 136, 0.1); color: #0d9488;">
+                <span class="material-icons">history</span>
+              </div>
+              <div class="menu-text">
+                <div class="menu-title">Riwayat Transaksi Lengkap</div>
+                <div class="menu-sub">Daftar struk belanja &amp; tiket bazar</div>
+              </div>
+              <span class="material-icons" style="color: #94a3b8; font-size: 18px;">chevron_right</span>
+            </div>
+          </div>
+
+          <!-- Menu Group 2: Pengaturan -->
+          <div style="padding: 10px 20px 8px; font-size: 11px; font-weight: 700; color: #94a3b8;">Pengaturan &amp;
+            Bantuan</div>
+          <div class="menu-group-card">
+            <div class="menu-row" onclick="showToast('Ubah alamat pengiriman')">
+              <div class="menu-icon-box" style="background: rgba(249, 115, 22, 0.1); color: #ea580c;">
+                <span class="material-icons">location_on</span>
+              </div>
+              <div class="menu-text">
+                <div class="menu-title">Alamat Pengiriman</div>
+                <div class="menu-sub">Gedung FKIP / Asrama / Kost Ambon</div>
+              </div>
+              <span class="material-icons" style="color: #94a3b8; font-size: 18px;">chevron_right</span>
+            </div>
+            <div class="menu-row" onclick="showToast('Pengaturan keamanan akun')">
+              <div class="menu-icon-box" style="background: rgba(99, 102, 241, 0.1); color: #4f46e5;">
+                <span class="material-icons">lock</span>
+              </div>
+              <div class="menu-text">
+                <div class="menu-title">Keamanan &amp; Ganti Password</div>
+              </div>
+              <span class="material-icons" style="color: #94a3b8; font-size: 18px;">chevron_right</span>
+            </div>
+            <div class="menu-row" onclick="showToast('Menghubungi Pusat Bantuan SISFO')">
+              <div class="menu-icon-box" style="background: rgba(59, 130, 246, 0.1); color: #2563eb;">
+                <span class="material-icons">support_agent</span>
+              </div>
+              <div class="menu-text">
+                <div class="menu-title">Pusat Bantuan SISFO IAKN</div>
+                <div class="menu-sub">Layanan kendala akun &amp; pesanan</div>
+              </div>
+              <span class="material-icons" style="color: #94a3b8; font-size: 18px;">chevron_right</span>
+            </div>
+            <div class="menu-row" onclick="showToast('IAKN Commerce v1.0.1 Stable')">
+              <div class="menu-icon-box" style="background: rgba(148, 163, 184, 0.1); color: #64748b;">
+                <span class="material-icons">info</span>
+              </div>
+              <div class="menu-text">
+                <div class="menu-title">Tentang IAKN Commerce</div>
+                <div class="menu-sub">Versi 1.0.1 (Stable)</div>
+              </div>
+              <span class="material-icons" style="color: #94a3b8; font-size: 18px;">chevron_right</span>
+            </div>
+          </div>
+
+          <!-- Logout Button -->
+          <button class="btn-logout" onclick="showToast('Berhasil keluar dari akun'); navigateTo('screen-login')">
+            <span class="material-icons" style="font-size: 18px;">logout</span>
+            <span>Keluar dari Akun</span>
+          </button>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="navigateTo('screen-home')">
+            <span class="material-icons">store</span>
+            <span>Home</span>
+          </div>
+          <div class="nav-item" onclick="navigateTo('screen-produk')">
+            <span class="material-icons">category</span>
+            <span>Produk</span>
+          </div>
+          <div class="nav-item" onclick="navigateTo('screen-notifikasi')">
+            <span class="material-icons">notifications_none</span>
+            <span>Notifikasi</span>
+          </div>
+          <div class="nav-item active" onclick="navigateTo('screen-akun')">
+            <span class="material-icons">person</span>
+            <span>Akun</span>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- 7. KERANJANG BELANJA SCREEN -->
+      <div id="screen-keranjang" class="screen">
+        <!-- Top App Bar -->
+        <div class="cart-header">
+          <button class="btn-back" onclick="navigateTo('screen-home')">
+            <span class="material-icons">arrow_back</span>
+          </button>
+          <div class="cart-header-title">
+            <h3>KERANJANG BELANJA</h3>
+            <p id="cart-item-count-label">3 produk tersimpan</p>
+          </div>
+          <button class="btn-back" onclick="deleteSelectedCartItems()" title="Hapus produk terpilih">
+            <span class="material-icons" style="font-size: 20px;">delete_sweep</span>
+          </button>
+        </div>
+
+        <div class="cart-body" id="cart-scroll-body">
+          <!-- Campus pickup banner -->
+          <div class="info-banner" style="margin: 10px 16px 6px;">
+            <span class="material-icons" style="color: var(--primary-blue); font-size: 22px;">verified</span>
+            <div class="info-banner-text">
+              <h4>Gratis Ambil di Kampus IAKN</h4>
+              <p>Ambil langsung di Auditorium / Koperasi Mahasiswa</p>
+            </div>
+          </div>
+
+          <!-- Select All Bar -->
+          <div class="cart-select-all-row">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" id="cart-check-all" class="custom-cb" checked onchange="toggleCartSelectAll(this.checked)">
+              <span>Pilih Semua</span>
+            </label>
+            <span id="cart-selected-count-label" style="font-size: 11px; color: #64748b; font-weight: normal;">3 dari 3 dipilih</span>
+          </div>
+
+          <!-- Items Container -->
+          <div id="cart-items-list">
+            <!-- Rendered dynamically by JS -->
+          </div>
+
+          <!-- Empty State -->
+          <div id="cart-empty-view" class="cart-empty-state">
+            <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(0,0,255,0.08); display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+              <span class="material-icons" style="font-size: 42px; color: var(--primary-blue);">remove_shopping_cart</span>
+            </div>
+            <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">Keranjang Masih Kosong</h3>
+            <p style="font-size: 12px; color: #64748b; margin-bottom: 20px; max-width: 260px; line-height: 1.4;">
+              Yuk, temukan buku teologi, suvenir kriya Maluku, dan merchandise mahasiswa IAKN Ambon!
+            </p>
+            <button class="btn-primary" style="width: auto; padding: 10px 24px; font-size: 13px;" onclick="navigateTo('screen-produk')">
+              <span class="material-icons" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">shopping_bag</span>
+              Mulai Belanja
+            </button>
+          </div>
+
+          <!-- Voucher Section -->
+          <div class="cart-section-box" id="cart-voucher-box">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: #fffbeb; display: flex; align-items: center; justify-content: center; color: #d97706;">
+                <span class="material-icons" style="font-size: 20px;">local_offer</span>
+              </div>
+              <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <strong style="font-size: 12px;">Voucher Dies Natalis 35%</strong>
+                  <span style="background: #f0fdf4; border: 1px solid #86efac; color: #166534; font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 4px;">HEMAT 35%</span>
+                </div>
+                <div id="voucher-status-text" style="font-size: 11px; color: #64748b;">Voucher diskon aktif diterapkan</div>
+              </div>
+              <button id="btn-toggle-voucher" onclick="toggleCartVoucher()" style="background: transparent; border: none; font-size: 12px; font-weight: 700; color: #ef4444; cursor: pointer; padding: 4px 8px;">
+                Lepas
+              </button>
+            </div>
+          </div>
+
+          <!-- Delivery Option -->
+          <div class="cart-section-box" id="cart-delivery-box">
+            <div style="font-size: 12px; font-weight: 700; color: #0f172a; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+              <span class="material-icons" style="font-size: 16px;">directions_bike</span>
+              <span>Metode Pengambilan &amp; Penyerahan</span>
+            </div>
+            <div class="delivery-pill active" onclick="selectDeliveryPill(0, this)">
+              <span class="material-icons" style="font-size: 18px; color: var(--primary-blue);">storefront</span>
+              <div style="flex: 1;">
+                <div style="font-size: 11px; font-weight: 700; color: #0f172a;">Ambil di Auditorium / Koperasi</div>
+                <div style="font-size: 10px; color: #64748b;">Gratis • Jam operasional kampus</div>
+              </div>
+              <span style="font-size: 11px; font-weight: 700; color: #16a34a;">Gratis</span>
+            </div>
+            <div class="delivery-pill" onclick="selectDeliveryPill(1, this)">
+              <span class="material-icons" style="font-size: 18px; color: #64748b;">school</span>
+              <div style="flex: 1;">
+                <div style="font-size: 11px; font-weight: 600; color: #0f172a;">Antar ke Ruang Kuliah / Fakultas</div>
+                <div style="font-size: 10px; color: #64748b;">Gratis • Kurir mahasiswa IAKN</div>
+              </div>
+              <span style="font-size: 11px; font-weight: 700; color: #16a34a;">Gratis</span>
+            </div>
+            <div class="delivery-pill" onclick="selectDeliveryPill(2, this)">
+              <span class="material-icons" style="font-size: 18px; color: #64748b;">local_shipping</span>
+              <div style="flex: 1;">
+                <div style="font-size: 11px; font-weight: 600; color: #0f172a;">Kurir Luar Kampus (Ambon &amp; Sekitar)</div>
+                <div style="font-size: 10px; color: #64748b;">1-2 Hari kerja</div>
+              </div>
+              <span style="font-size: 11px; font-weight: 700; color: #0f172a;">Rp 15.000</span>
+            </div>
+          </div>
+
+          <!-- Summary Breakdown Box -->
+          <div class="cart-section-box" id="cart-summary-box">
+            <div style="font-size: 12px; font-weight: 700; color: #0f172a; margin-bottom: 8px;">Ringkasan Belanja</div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #475569; margin-bottom: 4px;">
+              <span id="sum-subtotal-label">Total Harga (3 Produk)</span>
+              <span id="sum-subtotal-val" style="font-weight: 600;">Rp 284.000</span>
+            </div>
+            <div id="sum-discount-row" style="display: flex; justify-content: space-between; font-size: 11px; color: #16a34a; margin-bottom: 4px;">
+              <span>Diskon Voucher (35%)</span>
+              <span id="sum-discount-val" style="font-weight: 600;">- Rp 99.400</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #475569; margin-bottom: 8px;">
+              <span>Ongkos Kirim / Penyerahan</span>
+              <span id="sum-shipping-val" style="font-weight: 600; color: #16a34a;">Gratis</span>
+            </div>
+            <div style="border-top: 1px dashed #e2e8f0; padding-top: 8px; display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #0f172a;">
+              <span>Total Pembayaran</span>
+              <span id="sum-total-val" style="color: var(--primary-blue);">Rp 184.600</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fixed Bottom Checkout Bar -->
+        <div class="cart-checkout-bar" id="cart-checkout-bar">
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; font-weight: 700;">
+            <input type="checkbox" id="cart-check-bottom" class="custom-cb" checked onchange="toggleCartSelectAll(this.checked)">
+            <span>Semua</span>
+          </label>
+          <div style="text-align: right;">
+            <div style="font-size: 10px; color: #64748b;">Total Tagihan:</div>
+            <div id="bar-total-val" style="font-size: 15px; font-weight: 800; color: var(--primary-blue);">Rp 184.600</div>
+            <div id="bar-hemat-val" style="font-size: 9px; color: #16a34a; font-weight: 700;">Hemat Rp 99.400</div>
+          </div>
+          <button id="btn-checkout-action" onclick="submitCartCheckout()" style="background: var(--primary-blue); color: #fff; border: none; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;">
+            Checkout (3)
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer-instruction">
+    <p>💡 Tip: Anda bisa mengklik tombol login, kategori, tab bawah (Home / Produk), dan tombol keranjang untuk
+      menavigasi aplikasi secara langsung.</p>
+  </div>
+
+  <script>
+    // Navigation Router
+    function navigateTo(screenId) {
+      const screens = document.querySelectorAll('.screen');
+      screens.forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(screenId);
+      if (target) {
+        target.classList.add('active');
+      }
+    }
+
+    // Toggle Password Visibility
+    function togglePassword(inputId, icon) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility';
+      } else {
+        input.type = 'password';
+        icon.textContent = 'visibility_off';
+      }
+    }
+
+    // Toast Message with guaranteed auto-dismiss and manual dismiss
+    let toastTimer = null;
+    let toastHideTimer = null;
+    function showToast(msg, duration = 3000) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      if (!toast || !toastMsg) return;
+
+      if (toastTimer) {
+        clearTimeout(toastTimer);
+        toastTimer = null;
+      }
+      if (toastHideTimer) {
+        clearTimeout(toastHideTimer);
+        toastHideTimer = null;
+      }
+
+      toastMsg.textContent = msg;
+      toast.style.display = 'flex';
+      toast.classList.remove('show');
+      void toast.offsetWidth; // Force CSS repaint
+      toast.classList.add('show');
+
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+        toastHideTimer = setTimeout(() => {
+          if (!toast.classList.contains('show')) {
+            toast.style.display = 'none';
+          }
+        }, 350);
+        toastTimer = null;
+      }, duration);
+    }
+
+    function hideToast() {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      if (toastTimer) {
+        clearTimeout(toastTimer);
+        toastTimer = null;
+      }
+      toast.classList.remove('show');
+      setTimeout(() => {
+        if (!toast.classList.contains('show')) {
+          toast.style.display = 'none';
+        }
+      }, 350);
+    }
+
+    // Filter & Sort chips
+    function filterChip(el) {
+      document.querySelectorAll('.chip-item').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      showToast('Kategori: ' + el.textContent);
+    }
+
+    function sortChip(el) {
+      document.querySelectorAll('.sort-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      showToast('Diurutkan berdasarkan ' + el.textContent.trim());
+    }
+
+    // Flash sale countdown timer
+    let totalSeconds = 4 * 3600 + 15 * 60 + 29;
+    setInterval(() => {
+      if (totalSeconds > 0) totalSeconds--;
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      const s = totalSeconds % 60;
+      const hEl = document.getElementById('h-box');
+      const mEl = document.getElementById('m-box');
+      const sEl = document.getElementById('s-box');
+      if (hEl) hEl.textContent = String(h).padStart(2, '0');
+      if (mEl) mEl.textContent = String(m).padStart(2, '0');
+      if (sEl) sEl.textContent = String(s).padStart(2, '0');
+    }, 1000);
+
+    // Notification functions
+    function filterNotif(el, cat) {
+      document.querySelectorAll('#screen-notifikasi .chip-item').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      const cards = document.querySelectorAll('#screen-notifikasi .notif-card');
+      cards.forEach(card => {
+        if (cat === 'all' || card.getAttribute('data-cat') === cat) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function readNotif(el) {
+      el.classList.remove('unread');
+      const dot = el.querySelector('.notif-dot');
+      if (dot) dot.style.display = 'none';
+      updateNotifBadge();
+    }
+
+    function markAllNotifsRead() {
+      document.querySelectorAll('#screen-notifikasi .notif-card').forEach(el => {
+        el.classList.remove('unread');
+        const dot = el.querySelector('.notif-dot');
+        if (dot) dot.style.display = 'none';
+      });
+      updateNotifBadge();
+      showToast('Semua notifikasi ditandai dibaca');
+    }
+
+    function updateNotifBadge() {
+      const unreadCount = document.querySelectorAll('#screen-notifikasi .notif-card.unread').length;
+      const badge = document.getElementById('notif-badge');
+      if (badge) {
+        if (unreadCount > 0) {
+          badge.textContent = unreadCount;
+          badge.style.display = 'inline-block';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+    }
+
+    // Initial Splash Animation
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const circle = document.getElementById('splash-circle');
+        const logo = document.getElementById('splash-logo');
+        if (circle) circle.classList.add('animate');
+        if (logo) logo.classList.add('show');
+
+        // Transition to login after animation
+        setTimeout(() => {
+          navigateTo('screen-login');
+        }, 1600);
+      }, 400);
+    });
+
+    // Cart State & Interactivity
+    let cartItems = [
+      {
+        id: 1,
+        title: "Buku Teologi Kontekstual Maluku",
+        seller: "Penerbit Literasi IAKN",
+        category: "Buku/Ilmiah",
+        variant: "Edisi Cetak 2026 (Hardcover)",
+        price: 85000,
+        qty: 1,
+        selected: true,
+        icon: "menu_book",
+        bgColor: "rgba(37, 99, 235, 0.12)",
+        iconColor: "#2563eb"
+      },
+      {
+        id: 2,
+        title: "Hoodie Dies Natalis IAKN Ke-25",
+        seller: "Koperasi Mahasiswa IAKN",
+        category: "Merchandise",
+        variant: "Warna: Biru Navy • Ukuran: L",
+        price: 99000,
+        qty: 1,
+        selected: true,
+        icon: "checkroom",
+        bgColor: "rgba(79, 70, 229, 0.12)",
+        iconColor: "#4f46e5"
+      },
+      {
+        id: 3,
+        title: "Miniatur Tifa Khas Maluku Orisinal",
+        seller: "Sanggar Seni & Kriya Kampus",
+        category: "Kriya Seni",
+        variant: "Kayu Ukir Ambon 20cm",
+        price: 50000,
+        qty: 2,
+        selected: true,
+        icon: "music_note",
+        bgColor: "rgba(234, 88, 12, 0.12)",
+        iconColor: "#ea580c"
+      }
+    ];
+
+    let voucherApplied = true;
+    let deliveryOption = 0; // 0 = Auditorium, 1 = Fakultas, 2 = Kurir (15000)
+
+    function formatRupiah(num) {
+      return 'Rp ' + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function renderCartItems() {
+      const container = document.getElementById('cart-items-list');
+      const emptyView = document.getElementById('cart-empty-view');
+      const checkoutBar = document.getElementById('cart-checkout-bar');
+      const voucherBox = document.getElementById('cart-voucher-box');
+      const deliveryBox = document.getElementById('cart-delivery-box');
+      const summaryBox = document.getElementById('cart-summary-box');
+
+      if (!container) return;
+
+      if (cartItems.length === 0) {
+        container.innerHTML = '';
+        if (emptyView) emptyView.style.display = 'flex';
+        if (checkoutBar) checkoutBar.style.display = 'none';
+        if (voucherBox) voucherBox.style.display = 'none';
+        if (deliveryBox) deliveryBox.style.display = 'none';
+        if (summaryBox) summaryBox.style.display = 'none';
+        document.getElementById('cart-item-count-label').textContent = '0 produk tersimpan';
+        return;
+      }
+
+      if (emptyView) emptyView.style.display = 'none';
+      if (checkoutBar) checkoutBar.style.display = 'flex';
+      if (voucherBox) voucherBox.style.display = 'block';
+      if (deliveryBox) deliveryBox.style.display = 'block';
+      if (summaryBox) summaryBox.style.display = 'block';
+
+      document.getElementById('cart-item-count-label').textContent = cartItems.length + ' produk tersimpan';
+
+      let html = '';
+      cartItems.forEach((item, index) => {
+        html += `
+          <div class="cart-item-card ${item.selected ? 'active-selected' : ''}" id="cart-card-${item.id}">
+            <div class="cart-item-seller">
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="checkbox" class="custom-cb" ${item.selected ? 'checked' : ''} onchange="toggleCartItem(${index}, this.checked)">
+                <span class="material-icons" style="font-size: 15px;">storefront</span>
+                <span>${item.seller}</span>
+              </label>
+              <span class="material-icons" style="font-size: 16px; color: #94a3b8; cursor: pointer;" onclick="removeCartItem(${index})">close</span>
+            </div>
+            <div class="cart-item-main">
+              <div class="cart-item-thumb" style="background: ${item.bgColor};">
+                <span class="category-badge">${item.category}</span>
+                <span class="material-icons" style="font-size: 32px; color: ${item.iconColor};">${item.icon}</span>
+              </div>
+              <div class="cart-item-details">
+                <div>
+                  <div class="cart-item-title">${item.title}</div>
+                  <div class="cart-item-variant">${item.variant}</div>
+                </div>
+                <div class="cart-item-bottom">
+                  <div class="cart-item-price">${formatRupiah(item.price)}</div>
+                  <div class="qty-control">
+                    <button class="qty-btn" onclick="updateCartItemQty(${index}, -1)">
+                      <span class="material-icons" style="font-size: 14px;">${item.qty === 1 ? 'delete' : 'remove'}</span>
+                    </button>
+                    <span class="qty-num">${item.qty}</span>
+                    <button class="qty-btn" onclick="updateCartItemQty(${index}, 1)">
+                      <span class="material-icons" style="font-size: 14px;">add</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+      calculateCartTotals();
+    }
+
+    function toggleCartItem(index, isChecked) {
+      if (cartItems[index]) {
+        cartItems[index].selected = isChecked;
+        renderCartItems();
+      }
+    }
+
+    function toggleCartSelectAll(isChecked) {
+      cartItems.forEach(item => item.selected = isChecked);
+      document.getElementById('cart-check-all').checked = isChecked;
+      document.getElementById('cart-check-bottom').checked = isChecked;
+      renderCartItems();
+    }
+
+    function updateCartItemQty(index, delta) {
+      if (!cartItems[index]) return;
+      const newQty = cartItems[index].qty + delta;
+      if (newQty <= 0) {
+        removeCartItem(index);
+      } else {
+        cartItems[index].qty = newQty;
+        renderCartItems();
+      }
+    }
+
+    function removeCartItem(index) {
+      const removed = cartItems.splice(index, 1)[0];
+      showToast(removed.title + ' dihapus dari keranjang', 3000);
+      renderCartItems();
+      updateCartBadgeCount();
+    }
+
+    function deleteSelectedCartItems() {
+      const selected = cartItems.filter(i => i.selected);
+      if (selected.length === 0) {
+        showToast('Tidak ada item yang dipilih');
+        return;
+      }
+      cartItems = cartItems.filter(i => !i.selected);
+      showToast(selected.length + ' item terpilih telah dihapus', 3000);
+      renderCartItems();
+      updateCartBadgeCount();
+    }
+
+    function toggleCartVoucher() {
+      voucherApplied = !voucherApplied;
+      const btn = document.getElementById('btn-toggle-voucher');
+      const text = document.getElementById('voucher-status-text');
+      if (voucherApplied) {
+        btn.textContent = 'Lepas';
+        btn.style.color = '#ef4444';
+        text.textContent = 'Voucher diskon aktif diterapkan';
+        showToast('Voucher Dies Natalis 35% diaktifkan!');
+      } else {
+        btn.textContent = 'Pakai';
+        btn.style.color = 'var(--primary-blue)';
+        text.textContent = 'Gunakan voucher untuk hemat lebih banyak';
+        showToast('Voucher diskon dilepas');
+      }
+      calculateCartTotals();
+    }
+
+    function selectDeliveryPill(index, el) {
+      deliveryOption = index;
+      document.querySelectorAll('#cart-delivery-box .delivery-pill').forEach((p, idx) => {
+        if (idx === index) {
+          p.classList.add('active');
+          p.querySelector('.material-icons').style.color = 'var(--primary-blue)';
+        } else {
+          p.classList.remove('active');
+          p.querySelector('.material-icons').style.color = '#64748b';
+        }
+      });
+      calculateCartTotals();
+    }
+
+    function calculateCartTotals() {
+      const selectedItems = cartItems.filter(i => i.selected);
+      const allSelected = cartItems.length > 0 && selectedItems.length === cartItems.length;
+
+      const chkAll = document.getElementById('cart-check-all');
+      const chkBot = document.getElementById('cart-check-bottom');
+      if (chkAll) chkAll.checked = allSelected;
+      if (chkBot) chkBot.checked = allSelected;
+
+      const countLabel = document.getElementById('cart-selected-count-label');
+      if (countLabel) {
+        countLabel.textContent = selectedItems.length + ' dari ' + cartItems.length + ' dipilih';
+      }
+
+      let subtotal = 0;
+      selectedItems.forEach(item => {
+        subtotal += item.price * item.qty;
+      });
+
+      const discount = (voucherApplied && selectedItems.length > 0) ? Math.round(subtotal * 0.35) : 0;
+      const shipping = (selectedItems.length > 0 && deliveryOption === 2) ? 15000 : 0;
+      const total = Math.max(0, subtotal - discount + shipping);
+
+      // Update Summary Rows
+      const sumSubLabel = document.getElementById('sum-subtotal-label');
+      if (sumSubLabel) sumSubLabel.textContent = 'Total Harga (' + selectedItems.length + ' Produk)';
+
+      const sumSubVal = document.getElementById('sum-subtotal-val');
+      if (sumSubVal) sumSubVal.textContent = formatRupiah(subtotal);
+
+      const sumDiscRow = document.getElementById('sum-discount-row');
+      const sumDiscVal = document.getElementById('sum-discount-val');
+      if (discount > 0) {
+        if (sumDiscRow) sumDiscRow.style.display = 'flex';
+        if (sumDiscVal) sumDiscVal.textContent = '- ' + formatRupiah(discount);
+      } else {
+        if (sumDiscRow) sumDiscRow.style.display = 'none';
+      }
+
+      const sumShipVal = document.getElementById('sum-shipping-val');
+      if (sumShipVal) {
+        sumShipVal.textContent = shipping === 0 ? 'Gratis' : formatRupiah(shipping);
+        sumShipVal.style.color = shipping === 0 ? '#16a34a' : '#0f172a';
+      }
+
+      const sumTotalVal = document.getElementById('sum-total-val');
+      if (sumTotalVal) sumTotalVal.textContent = formatRupiah(total);
+
+      // Update Bottom Bar
+      const barTotalVal = document.getElementById('bar-total-val');
+      if (barTotalVal) barTotalVal.textContent = formatRupiah(total);
+
+      const barHematVal = document.getElementById('bar-hemat-val');
+      if (barHematVal) {
+        if (discount > 0) {
+          barHematVal.style.display = 'block';
+          barHematVal.textContent = 'Hemat ' + formatRupiah(discount);
+        } else {
+          barHematVal.style.display = 'none';
+        }
+      }
+
+      const btnCheckout = document.getElementById('btn-checkout-action');
+      if (btnCheckout) {
+        btnCheckout.textContent = 'Checkout (' + selectedItems.length + ')';
+        if (selectedItems.length === 0) {
+          btnCheckout.style.background = '#94a3b8';
+        } else {
+          btnCheckout.style.background = 'var(--primary-blue)';
+        }
+      }
+    }
+
+    function updateCartBadgeCount() {
+      const badges = document.querySelectorAll('.cart-badge');
+      badges.forEach(b => {
+        b.textContent = cartItems.length;
+        if (cartItems.length === 0) {
+          b.style.display = 'none';
+        } else {
+          b.style.display = 'flex';
+        }
+      });
+    }
+
+    function submitCartCheckout() {
+      const selected = cartItems.filter(i => i.selected);
+      if (selected.length === 0) {
+        showToast('Pilih minimal satu produk untuk checkout!');
+        return;
+      }
+      const orderId = 'IKN-' + Math.floor(100000 + Math.random() * 900000);
+      alert('🎉 Pesanan Berhasil Dibuat!\n\nKode Pesanan: #' + orderId + '\nJumlah Produk: ' + selected.length + ' item\nMetode Penyerahan: ' + (deliveryOption === 2 ? 'Kurir Luar Kampus' : 'Ambil di Kampus IAKN') + '\n\nTerima kasih telah berbelanja di IAKN Commerce!');
+      cartItems = cartItems.filter(i => !i.selected);
+      renderCartItems();
+      updateCartBadgeCount();
+    }
+
+    // Initialize cart on load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCartItems();
+    });
+
+
+    // Home Products Catalog Data for Search
+    const allHomeProducts = [
+      {
+        id: "prod_1",
+        tag: "Buku Ilmiah",
+        title: "Antropologi Musik Maluku & Nusantara",
+        author: "Oleh: Prodi Musik Gereja",
+        category: "Buku/Ilmiah",
+        price: 85000,
+        priceStr: "Rp 85.000",
+        rating: 4.9,
+        reviews: 120,
+        icon: "auto_stories",
+        bg: "linear-gradient(135deg, #fef08a 0%, #fde047 100%)",
+        iconColor: "#854d0e"
+      },
+      {
+        id: "prod_2",
+        tag: "Jasa Grafis",
+        title: "Desain Banner & Publikasi Acara Kampus",
+        author: "Kreatif Lab Mahasiswa",
+        category: "Desain Grafis",
+        price: 50000,
+        priceStr: "Rp 50.000",
+        rating: 4.8,
+        reviews: 85,
+        icon: "palette",
+        bg: "linear-gradient(135deg, #e9d5ff 0%, #c084fc 100%)",
+        iconColor: "#6b21a8"
+      },
+      {
+        id: "prod_3",
+        tag: "Alat Musik",
+        title: "Tifa Maluku Kayu Ukir Asli",
+        author: "Bengkel Seni Kampus",
+        category: "Alat Musik",
+        price: 350000,
+        priceStr: "Rp 350.000",
+        rating: 5.0,
+        reviews: 25,
+        icon: "music_note",
+        bg: "linear-gradient(135deg, #fed7aa 0%, #fb923c 100%)",
+        iconColor: "#9a3412"
+      },
+      {
+        id: "prod_4",
+        tag: "Tek. Edukasi",
+        title: "Media Belajar Interaktif PAUD Kristen",
+        author: "Laboratorium FKIP IAKN",
+        category: "Tek. Edukasi",
+        price: 125000,
+        priceStr: "Rp 125.000",
+        rating: 4.9,
+        reviews: 42,
+        icon: "laptop_chromebook",
+        bg: "linear-gradient(135deg, #bfdbfe 0%, #60a5fa 100%)",
+        iconColor: "#1e40af"
+      },
+      {
+        id: "prod_5",
+        tag: "Karya Dosen",
+        title: "Buku Teologi Kontekstual & Budaya Maluku",
+        author: "Penulis: Dosen IAKN",
+        category: "Buku/Ilmiah",
+        price: 95000,
+        priceStr: "Rp 95.000",
+        rating: 5.0,
+        reviews: 82,
+        icon: "menu_book",
+        bg: "linear-gradient(135deg, #fef08a 0%, #facc15 100%)",
+        iconColor: "#854d0e"
+      },
+      {
+        id: "prod_6",
+        tag: "Merchandise",
+        title: "Hoodie Dies Natalis IAKN Ke-25",
+        author: "Koperasi Mahasiswa IAKN",
+        category: "Merchandise",
+        price: 99000,
+        priceStr: "Rp 99.000",
+        rating: 4.9,
+        reviews: 165,
+        icon: "checkroom",
+        bg: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+        iconColor: "#ffffff"
+      },
+      {
+        id: "prod_7",
+        tag: "Merchandise",
+        title: "Tumbler Grafir Logo Edisi Ambon",
+        author: "Koperasi Mahasiswa",
+        category: "Merchandise",
+        price: 45000,
+        priceStr: "Rp 45.000",
+        rating: 4.8,
+        reviews: 90,
+        icon: "local_cafe",
+        bg: "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+        iconColor: "#ffffff"
+      },
+      {
+        id: "prod_8",
+        tag: "Kriya Seni",
+        title: "Miniatur Tifa Khas Maluku Orisinal",
+        author: "Sanggar Seni & Kriya Kampus",
+        category: "Alat Musik",
+        price: 50000,
+        priceStr: "Rp 50.000",
+        rating: 4.9,
+        reviews: 50,
+        icon: "apartment",
+        bg: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
+        iconColor: "#ffffff"
+      },
+      {
+        id: "prod_9",
+        tag: "Layanan Kilat",
+        title: "Jasa Translate Naskah Ilmiah & Abstrak",
+        author: "Unit Bahasa Kampus",
+        category: "Jasa/Layanan",
+        price: 35000,
+        priceStr: "Rp 35.000",
+        rating: 4.9,
+        reviews: 64,
+        icon: "translate",
+        bg: "linear-gradient(135deg, #e9d5ff 0%, #c084fc 100%)",
+        iconColor: "#6b21a8"
+      },
+      {
+        id: "prod_10",
+        tag: "Merchandise BEM",
+        title: "Totebag Kanvas Motif Tenun Maluku",
+        author: "BEM IAKN Ambon",
+        category: "Merchandise",
+        price: 45000,
+        priceStr: "Rp 45.000",
+        rating: 4.7,
+        reviews: 53,
+        icon: "shopping_bag",
+        bg: "linear-gradient(135deg, #fbcfe8 0%, #f472b6 100%)",
+        iconColor: "#9d174d"
+      },
+      {
+        id: "prod_11",
+        tag: "Karya Mahasiswa",
+        title: "Gitar Akustik Custom Mahasiswa",
+        author: "Prodi Pendidikan Seni",
+        category: "Alat Musik",
+        price: 750000,
+        priceStr: "Rp 750.000",
+        rating: 4.8,
+        reviews: 19,
+        icon: "music_note",
+        bg: "linear-gradient(135deg, #bbf7d0 0%, #4ade80 100%)",
+        iconColor: "#166534"
+      },
+      {
+        id: "prod_12",
+        tag: "Lisensi Edu",
+        title: "Software Pembelajaran Liturgi Digital",
+        author: "Lab Komputer IAKN",
+        category: "Tek. Edukasi",
+        price: 150000,
+        priceStr: "Rp 150.000",
+        rating: 4.9,
+        reviews: 31,
+        icon: "computer",
+        bg: "linear-gradient(135deg, #ccfbf1 0%, #2dd4bf 100%)",
+        iconColor: "#115e59"
+      }
+    ];
+
+    let currentHomeCategory = "Semua";
+    const homeSearchCategories = ["Semua", "Buku/Ilmiah", "Alat Musik", "Jasa/Layanan", "Desain Grafis", "Tek. Edukasi", "Merchandise"];
+
+    function handleHomeSearch(val) {
+      const query = (val || "").trim();
+      const clearBtn = document.getElementById('home-search-clear');
+      const tuneBtn = document.getElementById('home-search-tune');
+
+      if (query.length > 0) {
+        if (clearBtn) clearBtn.style.display = 'inline-block';
+        if (tuneBtn) tuneBtn.style.display = 'none';
+      } else {
+        if (clearBtn) clearBtn.style.display = 'none';
+        if (tuneBtn) tuneBtn.style.display = 'inline-block';
+      }
+
+      renderHomeSearchResults(query, currentHomeCategory);
+    }
+
+    function filterHomeByCategory(category) {
+      currentHomeCategory = category;
+      const input = document.getElementById('home-search-input');
+      const query = input ? input.value.trim() : "";
+      renderHomeSearchResults(query, category);
+    }
+
+    function clearHomeSearch() {
+      const input = document.getElementById('home-search-input');
+      if (input) input.value = '';
+      currentHomeCategory = "Semua";
+      const clearBtn = document.getElementById('home-search-clear');
+      const tuneBtn = document.getElementById('home-search-tune');
+      if (clearBtn) clearBtn.style.display = 'none';
+      if (tuneBtn) tuneBtn.style.display = 'inline-block';
+
+      const defaultView = document.getElementById('home-default-view');
+      const searchView = document.getElementById('home-search-view');
+      if (defaultView) defaultView.style.display = 'block';
+      if (searchView) searchView.style.display = 'none';
+    }
+
+    function renderHomeSearchResults(query, category) {
+      const defaultView = document.getElementById('home-default-view');
+      const searchView = document.getElementById('home-search-view');
+      const titleEl = document.getElementById('home-search-title');
+      const countEl = document.getElementById('home-search-count-label');
+      const grid = document.getElementById('home-search-grid');
+      const emptyView = document.getElementById('home-search-empty');
+      const chipsContainer = document.getElementById('home-search-chips');
+
+      const isSearching = (query.length > 0) || (category !== "Semua");
+
+      if (!isSearching) {
+        if (defaultView) defaultView.style.display = 'block';
+        if (searchView) searchView.style.display = 'none';
+        return;
+      }
+
+      if (defaultView) defaultView.style.display = 'none';
+      if (searchView) searchView.style.display = 'block';
+
+      // Render filter chips
+      if (chipsContainer) {
+        let chipsHtml = '';
+        homeSearchCategories.forEach(cat => {
+          const isAct = cat.toLowerCase() === category.toLowerCase();
+          chipsHtml += `
+            <div class="chip-item ${isAct ? 'active' : ''}" style="white-space: nowrap; cursor: pointer; padding: 4px 12px; font-size: 11px; border-radius: 16px;" onclick="filterHomeByCategory('${cat}')">
+              ${cat}
+            </div>
+          `;
+        });
+        chipsContainer.innerHTML = chipsHtml;
+      }
+
+      // Filter products
+      const q = query.toLowerCase();
+      const filtered = allHomeProducts.filter(p => {
+        const matchesQuery = !q ||
+          p.title.toLowerCase().includes(q) ||
+          p.author.toLowerCase().includes(q) ||
+          p.tag.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q);
+
+        const matchesCat = (category === "Semua") || (p.category.toLowerCase() === category.toLowerCase());
+        return matchesQuery && matchesCat;
+      });
+
+      // Update titles
+      if (titleEl) {
+        titleEl.textContent = query.length > 0 ? `Hasil pencarian: "${query}"` : `Kategori: ${category}`;
+      }
+      if (countEl) {
+        countEl.textContent = `${filtered.length} produk ditemukan`;
+      }
+
+      if (filtered.length === 0) {
+        if (grid) grid.style.display = 'none';
+        if (emptyView) emptyView.style.display = 'block';
+      } else {
+        if (emptyView) emptyView.style.display = 'none';
+        if (grid) {
+          grid.style.display = 'grid';
+          let html = '';
+          filtered.forEach(p => {
+            html += `
+              <div class="product-card">
+                <div class="product-img-box" style="background: ${p.bg};">
+                  <span class="material-icons" style="color: ${p.iconColor}; font-size: 40px;">${p.icon}</span>
+                  <div class="badge-product-tag">${p.tag}</div>
+                </div>
+                <div class="product-card-body">
+                  <div class="rating-row">
+                    <span class="material-icons">star</span>
+                    <span class="rating-val">${p.rating}</span>
+                    <span class="rating-count">(${p.reviews})</span>
+                  </div>
+                  <div class="product-title">${p.title}</div>
+                  <div class="product-author">${p.author}</div>
+                  <div class="product-bottom">
+                    <div class="product-price">${p.priceStr}</div>
+                    <button class="btn-add-cart" onclick="addProductToCartHome('${p.id}')">
+                      <span class="material-icons">shopping_cart</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+          grid.innerHTML = html;
+        }
+      }
+    }
+
+    function addProductToCartHome(prodId) {
+      const prod = allHomeProducts.find(p => p.id === prodId);
+      if (!prod) return;
+
+      // Check if already in cart
+      const existing = cartItems.find(item => item.title === prod.title);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cartItems.push({
+          id: Date.now(),
+          title: prod.title,
+          seller: prod.author,
+          category: prod.category,
+          variant: "Standar",
+          price: prod.price,
+          qty: 1,
+          selected: true,
+          icon: prod.icon,
+          bgColor: "rgba(0, 0, 255, 0.1)",
+          iconColor: prod.iconColor || "#0000FF"
+        });
+      }
+
+      showToast(`'${prod.title}' ditambahkan ke keranjang!`);
+      updateCartBadgeCount();
+      renderCartItems();
+    }
+
+  </script>
+</body>
+
+</html>
